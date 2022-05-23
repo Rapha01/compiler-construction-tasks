@@ -1,0 +1,30 @@
+hw0
+Added a print line to the beginning of selfie() method
+
+hw1
+Added constants for sll and srl f3 and f7 codes, according to documentation.
+In decode_execute() there is already a distinction between OP codes and the decoding of their instruction typs.
+	Accoding to docu, sll and srl Op code is 51(in selfie OP_OP), like ADD, SUB,..
+	Added distinction (if-clauses) for sll (F3_SLL = 1 && F7_SLL = 0) and srl (F3_SRL = 5 && F7_SRL = 0)
+	We now know when we are dealing with a sll or srl operation - now we start do_sll()/do_srl() to tigger their semantics/effects on the machine.
+	Copied and adjusted debug code from other instruction.
+In do_sll()/do_srl()
+	According to documentation, all sll/srl operations read the rs1 and rs2 registers as source operands and write the result into register rd.
+	So the semantics/code for do_sll()/do_srl() is the same as do_add(), only instead of a addition between rs1 and rs2, we use the selfie library functions to leftshift/rightshift(the bitsequence rs1, by rs2 bits).
+	Of course we also have to increment the program counter.
+Added debug constants ic_sll/ic_srl, their semantics and output.
+
+hw2
+Added constants for sll and srl symbols.
+In scanner (getSymbol())
+	After the Check for Less/Greater signs we have to differentiate if we read << or >> (like it is done for <= and >=) and set the matching symbol.
+In Parser
+	According to c standart the precedence of << and >> is in between our grammars simple expression and expression
+	First, we copy the simpleExpression function (complexExpression) and "attach it" in between the other two
+		We need to change the compile calls from expression->simpleExpression to expression->complexExpression->simpleExpression
+	In complexExpression
+		First we take our left hand simpleExpression and check for an occurence of << or >>
+		If we find it, we also take the right hand simpleExpression and emit the corresponding machinecode (R-Type, like SLTU, but with different funct codes from hw1/the riscV doku)
+		The result is left as usual in the first temporary register, while the second one gets emitted.
+		For parsing a complexExpression, we need a while loop because we want to be able to parse chained complexExpressions f.e. a << b << c
+	

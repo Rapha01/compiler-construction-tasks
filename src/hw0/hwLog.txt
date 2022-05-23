@@ -1,0 +1,4 @@
+hw0
+Added a print line to the beginning of selfie() method
+
+hw1
